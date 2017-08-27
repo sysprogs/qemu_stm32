@@ -225,6 +225,19 @@ static void stm32_create_dac_dev(
     
 }
 
+static void stm32_create_dwt_dev(
+        Object *stm32_container,
+        stm32_periph_t periph,
+        hwaddr addr)
+{
+    char child_name[8];
+    DeviceState *dac_dev = qdev_create(NULL, "stm32-dwt");
+    QDEV_PROP_SET_PERIPH_T(dac_dev, "periph", periph);
+    snprintf(child_name, sizeof(child_name), "dwt");
+    object_property_add_child(stm32_container, child_name, OBJECT(dac_dev), NULL);
+    stm32_init_periph(dac_dev, periph, addr, 0);
+}
+
 
 void stm32_init(
             ram_addr_t flash_size,
@@ -243,8 +256,8 @@ void stm32_init(
     pic = armv7m_init(
               stm32_container,
               address_space_mem,
-              flash_size,
-              ram_size,
+              (flash_size / 1024) + 1,
+              (ram_size / 1024) + 1,
               kernel_filename,
               "cortex-m3");
 
@@ -330,6 +343,8 @@ void stm32_init(
     stm32_create_adc_dev(stm32_container, STM32_ADC1, 1, rcc_dev, gpio_dev, 0x40012400,0 );
     stm32_create_rtc_dev(stm32_container,STM32_RTC, 1, rcc_dev, 0x40002800,pic[STM32_RTC_IRQ]);
     stm32_create_dac_dev(stm32_container,STM32_DAC, rcc_dev,gpio_dev, 0x40007400,0);
+	
+    stm32_create_dwt_dev(stm32_container,STM32_DWT, 0xE0001004);
     
     /* IWDG */
     DeviceState *iwdg_dev = qdev_create(NULL, "stm32_iwdg");

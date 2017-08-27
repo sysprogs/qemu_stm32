@@ -3323,6 +3323,10 @@ void arm_v7m_cpu_do_interrupt(CPUState *cs)
                 return;
             }
         }
+		{
+			cpu_interrupt(cs, CPU_INTERRUPT_DEBUG);
+			return;
+		}
         armv7m_nvic_set_pending(env->nvic, ARMV7M_EXCP_DEBUG);
         return;
     case EXCP_IRQ:

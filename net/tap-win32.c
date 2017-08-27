@@ -780,3 +780,10 @@ int tap_disable(NetClientState *nc)
 {
     abort();
 }
+
+int net_init_bridge(const NetClientOptions *opts, const char *name,
+                    NetClientState *peer)
+					{ return -1;}
+					
+				int qemu_del_wait_object() { return 0;}
+				int qemu_add_wait_object() { return 0;}

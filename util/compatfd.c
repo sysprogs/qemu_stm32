@@ -17,7 +17,9 @@
 #include "qemu/compatfd.h"
 #include "qemu/thread.h"
 
+#ifdef CONFIG_SIGNALFD
 #include <sys/syscall.h>
+#endif
 
 struct sigfd_compat_info
 {

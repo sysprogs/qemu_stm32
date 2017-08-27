@@ -216,11 +216,15 @@ qemu_irq *armv7m_init(Object *parent, MemoryRegion *address_space_mem,
 #endif
 
     /* Flash programming is done via the SCU, so pretend it is ROM.  */
-    memory_region_init_ram(flash, NULL, "armv7m.flash", flash_size);
+	void *ram_addr = g_malloc0(sram_size);
+	void *flash_addr = g_malloc0(flash_size);
+	printf("vmem: ram|0x20000000|%p|%p\n", ram_addr, (void *)sram_size);
+	printf("vmem: flash|0x0|%p|%p\n", flash_addr, (void *)flash_size);
+    memory_region_init_ram_ptr(flash, NULL, "armv7m.flash", flash_size, flash_addr);
     vmstate_register_ram_global(flash);
     memory_region_set_readonly(flash, true);
     memory_region_add_subregion(address_space_mem, 0, flash);
-    memory_region_init_ram(sram, NULL, "armv7m.sram", sram_size);
+    memory_region_init_ram_ptr(sram, NULL, "armv7m.sram", sram_size, ram_addr);
     vmstate_register_ram_global(sram);
     memory_region_add_subregion(address_space_mem, 0x20000000, sram);
     armv7m_bitband_init(parent);
